@@ -17,39 +17,81 @@ includes_string = "/*\n" \
                  " * #include\n" \
                  " */\n\n"
 
-return_type = "void"
-context_type = "Context"
-ir_type = "Instr"
+return_type = 'void'
+context_type = 'Context&'
+ir_type = 'Instr&'
+opcode_type = 'Opcode'
+field_type = 'Field'
 
 
-def parse(fin_name):
+def parse_yaml(fin_name):
     # parsing from file function
     with open(fin_name, 'r') as fin:
         return yaml.safe_load(fin)
 
-def hashtable_hpp(commands):
-    with open('cmd_hashtable.hpp', 'w') as fout:
+def instr_enum(opcodes, arguments):
+    with open('enums.hpp', 'w') as fout:
         fout.write(comment_string)
-        fout.write(f"std::unordered_map<const std::string, {return_type}(*)({context_type}, {ir_type})> Cmds\n{{\n")
 
+        fout.write(f"enum {opcode_type}\n{{\n")
+        for opcd in opcodes:
+            num = opcd['mnemonic'].upper().replace('.', '_')
+            fout.write(f"    {num},\n")
+        fout.write(f"    UNDEFINED\n")
+        fout.write('};\n\n')
+        
+        fout.write(f"enum {field_type}\n{{\n")
+        for fld in arguments:
+            id = fld.upper()
+            fout.write(f"    {id},\n")
+        fout.write(f"    UNDEFINED\n")
+        fout.write('};') 
+
+def cmds_hashtbl(commands):
+    with open('cmds.hpp', 'w') as fout:
+        fout.write(comment_string)
+        fout.write("#pragma once\n" \
+                   "#include <cstdio>\n" \
+                   "#include <unordered_map>\n\n" \
+                   "#include \"parse_types.hpp\"\n\n"
+                   "#include \"enums.hpp\"\n\n")
         last = commands[-1]
+
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
-            fout.write(f"    {{\"{instr}\", do_{instr}}}{',' if cmd is not last else ''}\n")
+            fout.write(f"{return_type} do_{instr}({context_type}, {ir_type});\n")
+        fout.write('\n\n')
+        
+        fout.write(f"std::unordered_map<const std::string, {opcode_type}> OpcdHash\n{{\n")
+        for cmd in commands:
+            instr = cmd['mnemonic'].upper().replace('.', '_')
+            fout.write(f"    {{\"{cmd['mnemonic']}\", {instr}}}{',' if cmd is not last else ''}\n")
+        fout.write('};\n\n')
 
+        fout.write(f"std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds\n{{\n")
+        for cmd in commands:
+            instr = cmd['mnemonic'].upper().replace('.', '_')
+            fout.write(f"    {{{instr}, do_{instr}}}{',' if cmd is not last else ''}\n")
         fout.write('};')
 
-def cmd_cpp(commands):
-    with open('cmd.cpp', 'w') as fout:
+def cmds_cpp(commands, arguments):
+    with open('cmds.cpp', 'w') as fout:
         fout.write(comment_string)
+        fout.write("#include <iostream>\n" \
+                   "#include \"parse_types.hpp\"\n" \
+                   "#include \"cmds.hpp\"\n\n")
 
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
-            fout.write(f'{return_type} do_{instr}({context_type}, {ir_type})\n')
-            fout.write(
-                '{\n'
-                f'    common_routine({context_type}, {ir_type});\n'
-                '     std::cerr << __func__ << " NOT IMPLEMENTED YET" << std:: endl;\n'
+            fout.write(f'{return_type} do_{instr}({context_type} ctx, {ir_type} instru)\n')
+            fout.write('{\n')
+            if cmd['fields'] and cmd['fields'][0] == 'rd':
+                print(cmd['fields'][0])
+                def_routine = f'    def_routine(ctx, instru);\n'
+                fout.write(def_routine)
+            
+            fout.write( \
+                '    std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
                 '}\n\n'
             )
 
@@ -57,13 +99,11 @@ def main():
     
     yaml_in = 'risc-v.yaml'  # input()
     yaml_out = 'decode.cpp'  # input()
-    yaml_dict = parse(yaml_in)
+    yaml_dict = parse_yaml(yaml_in)
 
-    for i in yaml_dict['instructions']:
-        print(i['mnemonic'], i['fields'])
-    
-    hashtable_hpp(yaml_dict['instructions'])
-    cmd_cpp(yaml_dict['instructions'])
+    instr_enum(yaml_dict['instructions'], yaml_dict['fields'])
+    cmds_hashtbl(yaml_dict['instructions'])
+    cmds_cpp(yaml_dict['instructions'], yaml_dict['fields'])
 
 if __name__ == '__main__':
     main()
