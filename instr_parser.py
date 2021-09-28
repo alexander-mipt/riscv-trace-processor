@@ -33,14 +33,14 @@ def instr_enum(opcodes, arguments):
     with open('enums.hpp', 'w') as fout:
         fout.write(comment_string)
 
-        fout.write(f"enum {opcode_type}\n{{\n")
+        fout.write(f"enum class {opcode_type}\n{{\n")
         for opcd in opcodes:
             num = opcd['mnemonic'].upper().replace('.', '_')
             fout.write(f"    {num},\n")
         fout.write(f"    UNDEFINED\n")
         fout.write('};\n\n')
         
-        fout.write(f"enum {field_type}\n{{\n")
+        fout.write(f"enum class {field_type}\n{{\n")
         for fld in arguments:
             id = fld.upper()
             fout.write(f"    {id},\n")
@@ -54,7 +54,8 @@ def cmds_hashtbl(commands):
                    "#include <cstdio>\n" \
                    "#include <unordered_map>\n\n" \
                    "#include \"parse_types.hpp\"\n\n"
-                   "#include \"enums.hpp\"\n\n")
+                   #"#include \"enums.hpp\"\n\n")
+        )
         last = commands[-1]
 
         for cmd in commands:
@@ -62,16 +63,16 @@ def cmds_hashtbl(commands):
             fout.write(f"{return_type} do_{instr}({context_type}, {ir_type});\n")
         fout.write('\n\n')
         
-        fout.write(f"std::unordered_map<const std::string, {opcode_type}> OpcdHash\n{{\n")
+        fout.write(f"static const std::unordered_map<std::string, {opcode_type}> OpcdHash = \\\n{{\n")
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
-            fout.write(f"    {{\"{cmd['mnemonic']}\", {instr}}}{',' if cmd is not last else ''}\n")
+            fout.write(f"    {{\"{cmd['mnemonic']}\", {opcode_type}::{instr}}}{',' if cmd is not last else ''}\n")
         fout.write('};\n\n')
 
-        fout.write(f"std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds\n{{\n")
+        fout.write(f"static const std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds = \\\n{{\n")
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
-            fout.write(f"    {{{instr}, do_{instr}}}{',' if cmd is not last else ''}\n")
+            fout.write(f"    {{{opcode_type}::{instr}, do_{instr}}}{',' if cmd is not last else ''}\n")
         fout.write('};')
 
 def cmds_cpp(commands, arguments):

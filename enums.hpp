@@ -6,7 +6,7 @@
  * Written by Derzhavin Andrey (derzhavin3016) && Khaydari Farid (Tako-San) && Antipov Alexander
  */
 
-enum Opcode
+enum class Opcode
 {
     BEQ,
     BNE,
@@ -209,7 +209,7 @@ enum Opcode
     UNDEFINED
 };
 
-enum Field
+enum class Field
 {
     RD,
     RS1,
