@@ -63,13 +63,13 @@ def cmds_hashtbl(commands):
             fout.write(f"{return_type} do_{instr}({context_type}, {ir_type});\n")
         fout.write('\n\n')
         
-        fout.write(f"static const std::unordered_map<std::string, {opcode_type}> OpcdHash = \\\n{{\n")
+        fout.write(f"static std::unordered_map<std::string, {opcode_type}> OpcdHash = \\\n{{\n")
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
             fout.write(f"    {{\"{cmd['mnemonic']}\", {opcode_type}::{instr}}}{',' if cmd is not last else ''}\n")
         fout.write('};\n\n')
 
-        fout.write(f"static const std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds = \\\n{{\n")
+        fout.write(f"static std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds = \\\n{{\n")
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
             fout.write(f"    {{{opcode_type}::{instr}, do_{instr}}}{',' if cmd is not last else ''}\n")

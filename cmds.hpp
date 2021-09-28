@@ -212,7 +212,7 @@ void do_FNMSUB_Q(Context&, Instr&);
 void do_FNMADD_Q(Context&, Instr&);
 
 
-static const std::unordered_map<std::string, Opcode> OpcdHash = \
+static std::unordered_map<std::string, Opcode> OpcdHash = \
 {
     {"beq", Opcode::BEQ},
     {"bne", Opcode::BNE},
@@ -414,7 +414,7 @@ static const std::unordered_map<std::string, Opcode> OpcdHash = \
     {"fnmadd.q", Opcode::FNMADD_Q}
 };
 
-static const std::unordered_map<Opcode, void(*)(Context&, Instr&)> Cmds = \
+static std::unordered_map<Opcode, void(*)(Context&, Instr&)> Cmds = \
 {
     {Opcode::BEQ, do_BEQ},
     {Opcode::BNE, do_BNE},
