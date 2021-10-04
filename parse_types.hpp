@@ -117,3 +117,4 @@ public:
 
 
 void def_routine(Context& ctx, Instr& instru);
+void err_routine(Context& ctx, Instr& instru);

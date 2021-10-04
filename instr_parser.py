@@ -61,6 +61,7 @@ def cmds_hashtbl(commands):
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
             fout.write(f"{return_type} do_{instr}({context_type}, {ir_type});\n")
+        fout.write(f"{return_type} do_UNDEFINED({context_type}, {ir_type});\n")
         fout.write('\n\n')
         
         fout.write(f"static std::unordered_map<std::string, {opcode_type}> OpcdHash = \\\n{{\n")
@@ -72,7 +73,8 @@ def cmds_hashtbl(commands):
         fout.write(f"static std::unordered_map<{opcode_type}, {return_type}(*)({context_type}, {ir_type})> Cmds = \\\n{{\n")
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
-            fout.write(f"    {{{opcode_type}::{instr}, do_{instr}}}{',' if cmd is not last else ''}\n")
+            fout.write(f"    {{{opcode_type}::{instr}, do_{instr}}},\n")
+        fout.write(f"    {{{opcode_type}::UNDEFINED, do_UNDEFINED}},\n")
         fout.write('};')
 
 def cmds_cpp(commands, arguments):
@@ -87,14 +89,22 @@ def cmds_cpp(commands, arguments):
             fout.write(f'{return_type} do_{instr}({context_type} ctx, {ir_type} instru)\n')
             fout.write('{\n')
             if cmd['fields'] and cmd['fields'][0] == 'rd':
-                print(cmd['fields'][0])
+                #print(cmd['fields'][0])
                 def_routine = f'    def_routine(ctx, instru);\n'
                 fout.write(def_routine)
             
             fout.write( \
-                '    std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
+                '    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
                 '}\n\n'
             )
+        fout.write(f'{return_type} do_UNDEFINED({context_type} ctx, {ir_type} instru)\n')
+        fout.write('{\n')
+        err_routine = f'    err_routine(ctx, instru);\n'
+        fout.write(err_routine)
+        fout.write( \
+            '    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
+            '}\n\n'
+        )
 
 def main():
     

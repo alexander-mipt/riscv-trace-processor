@@ -1831,6 +1831,25 @@ instructions:
   debug_hex_fixedmask: 600007f
   fixedvalue: 100663375
   debug_hex_fixedvalue: 600004f
+- &199 # added
+  mnemonic: li
+  fields: [rd, imm]
+- &200 # added
+  mnemonic: sext.w
+  fields: [rd, rs1]
+- &201 # added
+  mnemonic: mv
+  fields: [rd, rs1]
+- &202 # added
+  mnemonic: ret
+  fields: []
+- &203 # added
+  mnemonic: j
+  fields: [jimm20]
+- &204 # added
+  mnemonic: nop
+  fields: []
+
 decodertree:
   range: {msb: 6, lsb: 0}
   nodes:

@@ -206,6 +206,12 @@ enum class Opcode
     FMSUB_Q,
     FNMSUB_Q,
     FNMADD_Q,
+    LI,
+    SEXT_W,
+    MV,
+    RET,
+    J,
+    NOP,
     UNDEFINED
 };
 

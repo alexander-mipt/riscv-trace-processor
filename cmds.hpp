@@ -210,6 +210,13 @@ void do_FMADD_Q(Context&, Instr&);
 void do_FMSUB_Q(Context&, Instr&);
 void do_FNMSUB_Q(Context&, Instr&);
 void do_FNMADD_Q(Context&, Instr&);
+void do_LI(Context&, Instr&);
+void do_SEXT_W(Context&, Instr&);
+void do_MV(Context&, Instr&);
+void do_RET(Context&, Instr&);
+void do_J(Context&, Instr&);
+void do_NOP(Context&, Instr&);
+void do_UNDEFINED(Context&, Instr&);
 
 
 static std::unordered_map<std::string, Opcode> OpcdHash = \
@@ -411,7 +418,13 @@ static std::unordered_map<std::string, Opcode> OpcdHash = \
     {"fmadd.q", Opcode::FMADD_Q},
     {"fmsub.q", Opcode::FMSUB_Q},
     {"fnmsub.q", Opcode::FNMSUB_Q},
-    {"fnmadd.q", Opcode::FNMADD_Q}
+    {"fnmadd.q", Opcode::FNMADD_Q},
+    {"li", Opcode::LI},
+    {"sext.w", Opcode::SEXT_W},
+    {"mv", Opcode::MV},
+    {"ret", Opcode::RET},
+    {"j", Opcode::J},
+    {"nop", Opcode::NOP}
 };
 
 static std::unordered_map<Opcode, void(*)(Context&, Instr&)> Cmds = \
@@ -613,5 +626,12 @@ static std::unordered_map<Opcode, void(*)(Context&, Instr&)> Cmds = \
     {Opcode::FMADD_Q, do_FMADD_Q},
     {Opcode::FMSUB_Q, do_FMSUB_Q},
     {Opcode::FNMSUB_Q, do_FNMSUB_Q},
-    {Opcode::FNMADD_Q, do_FNMADD_Q}
+    {Opcode::FNMADD_Q, do_FNMADD_Q},
+    {Opcode::LI, do_LI},
+    {Opcode::SEXT_W, do_SEXT_W},
+    {Opcode::MV, do_MV},
+    {Opcode::RET, do_RET},
+    {Opcode::J, do_J},
+    {Opcode::NOP, do_NOP},
+    {Opcode::UNDEFINED, do_UNDEFINED},
 };
