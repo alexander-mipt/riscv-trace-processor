@@ -4,10 +4,21 @@
 
 void def_routine(Context& ctx, Instr& instru) {
     
-    std::cout << "has rd" << std::endl;
     auto name = instru.opnds[0].name;
-    std::cout << "changed reg: " << name << " gen: " << ctx.counter << std::endl;
-    ctx.regs[(int)ctx.RegNames[name]].gen = ctx.counter;
+    assert(RegNames.find(name) != RegNames.end());
+    ctx.regs[(int)RegNames[name]].name = name;
+    ctx.regs[(int)RegNames[name]].def = ctx.counter;
+
+    for (auto i = 1; i < opndCount; ++i) {
+        name = instru.opnds[i].name;
+        if (RegNames.find(name) != RegNames.end()) {
+            ctx.regs[(int)RegNames[name]].use = ctx.counter;
+            ctx.regs[(int)RegNames[name]].name = name;
+        } else if (!name.empty()) {
+            ctx.cache.push(name);
+        }
+    }
+
 
 
     /*

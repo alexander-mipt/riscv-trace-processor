@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "enums.hpp"
 #include <unordered_map>
+#include <queue>
 
 //typedef int Context;
 //typedef int Instr;
@@ -52,54 +53,60 @@ enum class Register {
     UNDEFINED
 };
 
+static std::unordered_map<std::string, Register> RegNames = {
+    {"zero", Register::ZERO},
+    {"ra", Register::RA},
+    {"sp", Register::SP},
+    {"gp", Register::GP},
+    {"tp", Register::TP},
+
+    {"t0", Register::T0},
+    {"t1", Register::T1},
+    {"t2", Register::T2},
+    {"t3", Register::T3},
+    {"t4", Register::T4},
+    {"t5", Register::T5},
+    {"t6", Register::T6},
+
+    {"s0", Register::S0},
+    {"s1", Register::S1},
+    {"s2", Register::S2},
+    {"s3", Register::S3},
+    {"s4", Register::S4},
+    {"s5", Register::S5},
+    {"s6", Register::S6},
+    {"s7", Register::S7},
+    {"s8", Register::S8},
+    {"s9", Register::S9},
+    {"s10", Register::S10},
+    {"s11", Register::S11},
+    
+    {"a0", Register::A0},
+    {"a1", Register::A1},
+    {"a2", Register::A2},
+    {"a3", Register::A3},
+    {"a4", Register::A4},
+    {"a5", Register::A5},
+    {"a6", Register::A6},
+    {"a7", Register::A7},
+};
+
 class Context {
 public:
     struct reg_t {
-        Register type{Register::UNDEFINED};
+        // Register type{Register::UNDEFINED};
+        std::string name{};
         uint64_t value{0};
-        uint64_t gen{0};
+        int64_t def{-1};
+        int64_t use{-1};
     };
 
-    std::unordered_map<std::string, Register> RegNames = {
-        {"zero", Register::ZERO},
-        {"ra", Register::RA},
-        {"sp", Register::SP},
-        {"gp", Register::GP},
-        {"tp", Register::TP},
 
-        {"t0", Register::T0},
-        {"t1", Register::T1},
-        {"t2", Register::T2},
-        {"t3", Register::T3},
-        {"t4", Register::T4},
-        {"t5", Register::T5},
-        {"t6", Register::T6},
-
-        {"s0", Register::S0},
-        {"s1", Register::S1},
-        {"s2", Register::S2},
-        {"s3", Register::S3},
-        {"s4", Register::S4},
-        {"s5", Register::S5},
-        {"s6", Register::S6},
-        {"s7", Register::S7},
-        {"s8", Register::S8},
-        {"s9", Register::S9},
-        {"s10", Register::S10},
-        {"s11", Register::S11},
-        
-        {"a0", Register::A0},
-        {"a1", Register::A1},
-        {"a2", Register::A2},
-        {"a3", Register::A3},
-        {"a4", Register::A4},
-        {"a5", Register::A5},
-        {"a6", Register::A6},
-        {"a7", Register::A7},
-    };
 
     reg_t regs[regCount]{};
     state counter{0};
+
+    std::queue<std::string> cache;
 };
 
 class Instr {
