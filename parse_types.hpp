@@ -97,8 +97,8 @@ public:
         // Register type{Register::UNDEFINED};
         std::string name{};
         uint64_t value{0};
-        int64_t def{-1};
-        int64_t use{-1};
+        std::pair<int64_t, int64_t> def{0, 0};
+        std::pair<int64_t, int64_t> use{0, 0};
     };
 
 

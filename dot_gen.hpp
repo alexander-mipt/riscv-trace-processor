@@ -7,9 +7,11 @@ public:
     ~Graph();
     void print();
     void addNode(std::string nodename, int rank);
+    void addSpace(int rank);
     void addEdge(std::string nodename_from, int from_rank, std::string nodename_to, int to_rank);
 private:
     int m_rank{0};
+    uint m_id{0};
     void addRankNode();
     std::stringstream m_out{}; 
 };
