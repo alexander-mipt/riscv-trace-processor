@@ -5,7 +5,7 @@ class Graph {
 public:
     Graph();
     ~Graph();
-    void print();
+    void save();
     void addNode(std::string nodename, int rank);
     void addSpace(int rank);
     void addEdge(std::string nodename_from, int from_rank, std::string nodename_to, int to_rank);

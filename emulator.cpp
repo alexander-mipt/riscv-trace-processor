@@ -7,44 +7,47 @@
 #include "dot_gen.hpp"
 
 #define FILENAME "../formatted_trace.txt"
+constexpr uint lineLim = 100;
 
 int main() {
     
     // parse to Instr
     std::ifstream file(FILENAME);
     if (file.is_open()) {
-        std::string line;
+        std::string line{};
         std::string prev_line = "init";
         Context state;
         Graph g;
-        auto limit = 0;
+        uint line_count = 0;
 
         g.addNode(prev_line, state.counter);
         state.counter++;
 
         // read trace
-        while (std::getline(file, line) && limit++ < 30) {
+        while (std::getline(file, line) && line_count++ < lineLim) {
+            // parse instruction
+
             // std::cout << line << std::endl;
             std::istringstream ss(line);
-            std::string pc{}, raw{}, opcode{}, src[4];
+            std::string pc{}, raw{}, opcode{}, src[opndCount];
             ss >> pc >> raw >> opcode >> src[0] >> src[1] >> src[2];
 
-            Instr current;
+            Instr cur;
 
             // init instr
             if (OpcdHash.find(opcode) != OpcdHash.end()) {
-                current.opcd = OpcdHash[opcode];
+                cur.opcd = OpcdHash[opcode];
                 //printf("%s\n", line.c_str());
                 
                 for (int i = 0; i < opndCount - 1; ++i) {
-                    current.opnds[i].name = src[i];
+                    cur.opnds[i].name = src[i];
                 }
 
                 // process instr
-                Cmds[current.opcd](state, current);
+                Cmds[cur.opcd](state, cur);
 
             } else {
-                printf("illegal instr: %s\n", line.c_str());
+                printf("illegal instr:\n%s\n", line.c_str());
                 exit(-1);
             }
 

@@ -1,6 +1,9 @@
 #include <cassert>
 #include <iostream>
 #include "dot_gen.hpp"
+#include <fstream>
+
+#define DOT_FILE "dfg.dot"
 
 Graph::Graph() {
     m_out << "digraph G {\n" << "\trankdir=UD\n" << "\tnode [shape=plaintext]\n";
@@ -8,7 +11,7 @@ Graph::Graph() {
 
 Graph::~Graph() {
     m_out << "}\n";
-    print();
+    save();
 }
 
 void Graph::addRankNode() {
@@ -39,6 +42,10 @@ void Graph::addEdge(std::string nodename_from, int from_rank, std::string nodena
     m_out << "\t\"" << nodename_from << from_rank << "\" -> \"" << nodename_to << to_rank << "\"\n";
 }
 
-void Graph::print() {
-    std::cout << m_out.str() << std::endl;
+void Graph::save() {
+    std::ofstream file(DOT_FILE);
+    if (file.is_open()) {
+        file << m_out.str();
+        file.close();
+    }
 }

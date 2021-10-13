@@ -1,4 +1,9 @@
 #include <stdio.h>
+
+int foo(int x) {
+    return x++;
+}
+
 int main() {
     /*char a = 0;
     while (a < 64) {
@@ -31,6 +36,9 @@ int main() {
                 break;
         }
     }
+
+    foo(c);
+
     
     return c;
 }

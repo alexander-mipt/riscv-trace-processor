@@ -10,7 +10,7 @@ void def_routine(Context& ctx, Instr& instru) {
     auto& reg = ctx.regs[(int)RegNames[name]];
     reg.name = name;
     
-    if (reg.def.first != -1) {
+    if (reg.def.first != 0) {
         reg.def.second = reg.def.first;
     }
     reg.def.first = ctx.counter;
@@ -21,7 +21,7 @@ void def_routine(Context& ctx, Instr& instru) {
             auto& reg = ctx.regs[(int)RegNames[name]];
             reg.name = name;
 
-            if (reg.use.first != -1) {
+            if (reg.use.first != 0) {
                 reg.use.second = reg.use.first;
             }
             reg.use.first = ctx.counter;
