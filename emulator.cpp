@@ -15,7 +15,7 @@ int main() {
     std::ifstream file(FILENAME);
     if (file.is_open()) {
         std::string line{};
-        std::string prev_line = "init";
+        std::string prev_line = "start";
         Context state;
         Graph g;
         uint line_count = 0;
@@ -52,9 +52,10 @@ int main() {
             }
 
             // push instr line on graph
-            g.addNode(line.c_str(), state.counter);
-            g.addEdge(prev_line.c_str(), state.counter - 1, line.c_str(), state.counter);
-            prev_line = line;
+            auto current_instr = opcode + " " + src[0] + " " + src[1] + " " + src[2];
+            g.addNode(current_instr.c_str(), state.counter);
+            g.addEdge(prev_line.c_str(), state.counter - 1, current_instr.c_str(), state.counter);
+            prev_line = current_instr;
             
             // process def and use
             
@@ -74,9 +75,21 @@ int main() {
                     g.addNode(def_reg, state.counter);
 
                     while(!state.cache.empty()) {
-                        // std::cout << "\tcache value: " << state.cache.front() << std::endl;
-                        g.addNode(state.cache.front(), state.counter);
-                        g.addEdge(state.cache.front(), state.counter, def_reg, state.counter);
+                        auto operand = state.cache.front();
+
+                        if (state.addrs.find(operand) != state.addrs.end()) {
+                            auto memory = state.addrs[operand];
+                            //if (memory.def == state.counter || memory.first_use == state.counter) {
+                                g.addNode(operand, memory.def);
+                            //}
+                            g.addEdge(operand, memory.def, def_reg, state.counter);
+
+                        } else {
+                            // std::cout << "\tcache value: " << state.cache.front() << std::endl;
+                            g.addNode(operand, state.counter);
+                            g.addEdge(operand, state.counter, def_reg, state.counter);
+                            
+                        }
                         state.cache.pop();
                     }
 

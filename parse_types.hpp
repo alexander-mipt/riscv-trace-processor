@@ -4,6 +4,7 @@
 #include "enums.hpp"
 #include <unordered_map>
 #include <queue>
+#include <map>
 
 //typedef int Context;
 //typedef int Instr;
@@ -101,12 +102,20 @@ public:
         std::pair<uint64_t, uint64_t> use{0, 0};
     };
 
-
+    struct addr_t {
+        std::string name{};
+        Register base{Register::UNDEFINED};
+        int offset{0};
+        uint64_t def{0};
+        uint64_t first_use{0};
+    };
 
     reg_t regs[regCount]{};
     state counter{0};
 
     std::queue<std::string> cache;
+
+    std::map<std::string, addr_t> addrs;
 };
 
 class Instr {
@@ -123,5 +132,8 @@ public:
 };
 
 
+std::pair<std::string, std::string> parse_addr(std::string);
 void def_routine(Context& ctx, Instr& instru);
 void err_routine(Context& ctx, Instr& instru);
+void load_routine(Context& ctx, Instr& instru);
+void store_routine(Context& ctx, Instr& instru);

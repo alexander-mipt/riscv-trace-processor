@@ -234,24 +234,28 @@ void do_SRAW(Context& ctx, Instr& instru)
 
 void do_LB(Context& ctx, Instr& instru)
 {
+   load_routine(ctx, instru);
     def_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_LH(Context& ctx, Instr& instru)
 {
+   load_routine(ctx, instru);
     def_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_LW(Context& ctx, Instr& instru)
 {
+   load_routine(ctx, instru);
     def_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_LD(Context& ctx, Instr& instru)
 {
+   load_routine(ctx, instru);
     def_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
@@ -276,21 +280,25 @@ void do_LWU(Context& ctx, Instr& instru)
 
 void do_SB(Context& ctx, Instr& instru)
 {
+  store_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_SH(Context& ctx, Instr& instru)
 {
+  store_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_SW(Context& ctx, Instr& instru)
 {
+  store_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 
 void do_SD(Context& ctx, Instr& instru)
 {
+  store_routine(ctx, instru);
     //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;
 }
 

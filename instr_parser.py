@@ -88,6 +88,17 @@ def cmds_cpp(commands, arguments):
             instr = cmd['mnemonic'].upper().replace('.', '_')
             fout.write(f'{return_type} do_{instr}({context_type} ctx, {ir_type} instru)\n')
             fout.write('{\n')
+            
+            loads = {'lb', 'lh', 'lw', 'ld'}
+            if cmd['mnemonic'] in loads:
+                load_routine = f'   load_routine(ctx, instru);\n'
+                fout.write(load_routine)
+
+            stores = {'sb', 'sh', 'sw', 'sd'}
+            if cmd['mnemonic'] in stores:
+                store_routine = f'  store_routine(ctx, instru);\n'
+                fout.write(store_routine)
+
             if cmd['fields'] and cmd['fields'][0] == 'rd':
                 #print(cmd['fields'][0])
                 def_routine = f'    def_routine(ctx, instru);\n'
