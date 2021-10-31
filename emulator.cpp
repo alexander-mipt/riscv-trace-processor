@@ -16,10 +16,12 @@ int main() {
     if (file.is_open()) {
         std::string line{};
         std::string prev_line = "start";
+        
         Context state;
         Graph g;
         uint line_count = 0;
 
+        // init
         g.addNode(prev_line, state.counter);
         state.counter++;
 
@@ -33,6 +35,7 @@ int main() {
             ss >> pc >> raw >> opcode >> src[0] >> src[1] >> src[2];
 
             Instr cur;
+            printf("%s\n", line.c_str());
 
             // init instr
             if (OpcdHash.find(opcode) != OpcdHash.end()) {
@@ -53,64 +56,96 @@ int main() {
 
             // push instr line on graph
             auto current_instr = opcode + " " + src[0] + " " + src[1] + " " + src[2];
+            std::string target = current_instr;
             g.addNode(current_instr.c_str(), state.counter);
             g.addEdge(prev_line.c_str(), state.counter - 1, current_instr.c_str(), state.counter);
             prev_line = current_instr;
             
-            // process def and use
-            
-            /*
-            for (auto i = 0; i < regCount; ++i) {
-                if (state.regs[i].def.first != state.counter) {
-                    g.addSpace(state.counter);
-                }
-            }
-            */
-
-            std::string def_reg{};
+            // process def
+            std::string def_target{};
             for (auto i = 0; i < regCount; ++i) {
                 if (state.regs[i].def.first == state.counter) {
-                    def_reg = state.regs[i].name;
-                    // std::cout << "def reg: " << def_reg << std::endl;
-                    g.addNode(def_reg, state.counter);
-
-                    while(!state.cache.empty()) {
-                        auto operand = state.cache.front();
-
-                        if (state.addrs.find(operand) != state.addrs.end()) {
-                            auto memory = state.addrs[operand];
-                            //if (memory.def == state.counter || memory.first_use == state.counter) {
-                                g.addNode(operand, memory.def);
-                            //}
-                            g.addEdge(operand, memory.def, def_reg, state.counter);
-
-                        } else {
-                            // std::cout << "\tcache value: " << state.cache.front() << std::endl;
-                            g.addNode(operand, state.counter);
-                            g.addEdge(operand, state.counter, def_reg, state.counter);
-                            
-                        }
-                        state.cache.pop();
-                    }
-
+                    def_target = state.regs[i].name;
+                    g.addNode(def_target, state.counter);
+                    g.addEdge(def_target, state.counter, target, state.counter);
                     break;
                 }
             }
+            /*
+            if (def_target.empty()) {
+                def_target = current_instr;
+            }*/
 
+            Context::reg_t store_src{};
             for (auto i = 0; i < regCount; ++i) {
                 if (state.regs[i].use.first == state.counter) {
                     auto& use_reg = state.regs[i];
-                    // std::cout << "\tuse reg: " << use_reg.name << std::endl;
 
+                    if (use_reg.def.second == 0 || use_reg.def.first == 0) {
+                        g.addNode(use_reg.name, 0);
+                    }
+                    if (use_reg.def.first == state.counter) {
+                        if (def_target.empty()) {
+                            g.addEdge(use_reg.name, use_reg.def.second, target, state.counter);
+                        } else {
+                            g.addEdge(use_reg.name, use_reg.def.second, def_target, state.counter);
+                        }
+                        
+                    } else {
+                        if (def_target.empty()) {
+                            g.addEdge(use_reg.name, use_reg.def.first, target, state.counter);
+                        } else {
+                            g.addEdge(use_reg.name, use_reg.def.first, def_target, state.counter);
+                        }
+                    }
+
+                    /*
                     if (use_reg.use.first == use_reg.def.first) {
                         if (use_reg.def.second == 0) {
                             g.addNode(use_reg.name, 0);
                         }
-                        g.addEdge(use_reg.name, use_reg.def.second, def_reg, state.counter);
+                        g.addEdge(use_reg.name, use_reg.def.second, def_target, state.counter);
                     } else {
-                        g.addEdge(use_reg.name, use_reg.def.first, def_reg, state.counter);
+                        g.addEdge(use_reg.name, use_reg.def.first, def_target, state.counter);
                     }
+                    */
+                   store_src = state.regs[i];
                 }
+            }
+
+            // draw vars in cache (imm, addr)
+            while(!state.cache.empty()) {
+                auto operand = state.cache.front();
+
+                // process addr
+                if (state.addrs.find(operand) != state.addrs.end()) {
+                    auto memory = state.addrs[operand];
+                    g.addNode(operand, memory.def);
+                    // if load
+                    if (memory.def != state.counter) {
+                        g.addEdge(operand, memory.def, def_target, state.counter);
+                    // if store
+                    } else {
+                        def_target = operand;
+                        g.addEdge(store_src.name, store_src.def.first, def_target, state.counter);
+                        // g.addEdge(def_target, state.counter, current_instr.c_str(), state.counter);
+                        g.addEdge(def_target, memory.def, target, state.counter);
+                    }
+                    
+                    printf("used addr: %s %d\n", operand.c_str(), memory.def);
+
+                // process imm
+                } else {
+                    g.addNode(operand, state.counter);
+                    if (def_target.empty()) {
+                        g.addEdge(operand, state.counter, target, state.counter);
+                    } else {
+                        g.addEdge(operand, state.counter, def_target, state.counter);
+                    }
+                    
+                    printf("used imm: %s\n", operand.c_str());
+                }
+                state.cache.pop();
             }
             
             state.counter++;

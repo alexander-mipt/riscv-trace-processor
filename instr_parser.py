@@ -87,8 +87,29 @@ def cmds_cpp(commands, arguments):
         for cmd in commands:
             instr = cmd['mnemonic'].upper().replace('.', '_')
             fout.write(f'{return_type} do_{instr}({context_type} ctx, {ir_type} instru)\n')
-            fout.write('{\n')
+            fout.write('{\n\n')
+
+            has_dst = 0
+            if cmd['fields'] and cmd['fields'][0] == 'rd':
+                has_dst = 1
+
+            src_reg_count = 0
+            imm_idx = -1
+            for idx, opnd in enumerate(cmd['fields']):
+                #src_reg_count = 0
+                if opnd in {'rs1', 'rs2', 'rs3'}:
+                    src_reg_count += 1
+                if opnd in {'imm', 'imm12', 'imm20', 'jimm20', 'bimm'}:
+                    imm_idx = idx
             
+            if imm_idx > -1:
+                imm_routine = f'    imm_routine(ctx, instru, {imm_idx});\n'
+                fout.write(imm_routine)
+            
+            if src_reg_count:
+                use_routine = f'    use_routine(ctx, instru, {has_dst}, {src_reg_count});\n'
+                fout.write(use_routine)
+
             loads = {'lb', 'lh', 'lw', 'ld'}
             if cmd['mnemonic'] in loads:
                 load_routine = f'   load_routine(ctx, instru);\n'
@@ -98,14 +119,13 @@ def cmds_cpp(commands, arguments):
             if cmd['mnemonic'] in stores:
                 store_routine = f'  store_routine(ctx, instru);\n'
                 fout.write(store_routine)
-
-            if cmd['fields'] and cmd['fields'][0] == 'rd':
-                #print(cmd['fields'][0])
+            
+            if has_dst:
                 def_routine = f'    def_routine(ctx, instru);\n'
                 fout.write(def_routine)
             
             fout.write( \
-                '    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
+                #'    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
                 '}\n\n'
             )
         fout.write(f'{return_type} do_UNDEFINED({context_type} ctx, {ir_type} instru)\n')
@@ -113,7 +133,7 @@ def cmds_cpp(commands, arguments):
         err_routine = f'    err_routine(ctx, instru);\n'
         fout.write(err_routine)
         fout.write( \
-            '    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
+            #'    //std::cerr << __func__ << " NOT IMPLEMENTED YET" << std::endl;\n'
             '}\n\n'
         )
 

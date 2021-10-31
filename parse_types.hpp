@@ -134,6 +134,8 @@ public:
 
 std::pair<std::string, std::string> parse_addr(std::string);
 void def_routine(Context& ctx, Instr& instru);
+void use_routine(Context& ctx, Instr& instru, uint8_t has_dst, uint8_t num_src);
+void imm_routine(Context& ctx, Instr& instru, uint8_t idx);
 void err_routine(Context& ctx, Instr& instru);
 void load_routine(Context& ctx, Instr& instru);
 void store_routine(Context& ctx, Instr& instru);
