@@ -22,7 +22,7 @@ int main() {
         uint line_count = 0;
 
         // init
-        g.addNode(prev_line, state.counter);
+        g.addNode(prev_line, state.counter, true);
         state.counter++;
 
         // read trace
@@ -57,7 +57,7 @@ int main() {
             // push instr line on graph
             auto current_instr = opcode + " " + src[0] + " " + src[1] + " " + src[2];
             std::string target = current_instr;
-            g.addNode(current_instr.c_str(), state.counter);
+            g.addNode(current_instr.c_str(), state.counter, true);
             g.addEdge(prev_line.c_str(), state.counter - 1, current_instr.c_str(), state.counter);
             prev_line = current_instr;
             
