@@ -38,11 +38,11 @@ void Graph::addNode(std::string nodename, int rank, bool cluster) {
     }
 
     if (cluster) {
-        m_cluster << "\t\t\"" << nodename << rank << "\"" << " [label=\"" << nodename << "\"]\n";
-        m_cluster << "\t{ rank=same " << rank << " \"" << nodename << rank << "\" }\n" ;
+        m_out << "\t\t\"" << nodename << rank << "\"" << " [label=\"" << nodename << "\"]\n";
+        m_out << "\t{ rank=same " << rank << " \"" << nodename << rank << "\" }\n" ;
     } else {
-        m_cluster_data << "\t\"" << nodename << rank << "\"" << " [label=\"" << nodename << "\"]\n";
-        m_cluster_data << "\t{ rank=same " << rank << " \"" << nodename << rank << "\" }\n" ;
+        m_out << "\t\"" << nodename << rank << "\"" << " [label=\"" << nodename << "\"]\n";
+        m_out << "\t{ rank=same " << rank << " \"" << nodename << rank << "\" }\n" ;
     }
     
     

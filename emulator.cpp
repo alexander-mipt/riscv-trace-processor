@@ -81,8 +81,10 @@ int main() {
                 if (state.regs[i].use.first == state.counter) {
                     auto& use_reg = state.regs[i];
 
-                    if (use_reg.def.second == 0 || use_reg.def.first == 0) {
-                        g.addNode(use_reg.name, 0);
+                    if (use_reg.def.first != state.counter) {
+                        g.addNode(use_reg.name, use_reg.def.first);
+                    } else {
+                        g.addNode(use_reg.name, use_reg.def.second);
                     }
                     if (use_reg.def.first == state.counter) {
                         if (def_target.empty()) {
