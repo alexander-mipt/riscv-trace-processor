@@ -114,8 +114,8 @@ public:
     state counter{0};
 
     std::queue<std::string> cache;
-
     std::map<std::string, addr_t> addrs;
+    bool memory_access{false};
 };
 
 class Instr {

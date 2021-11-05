@@ -88,14 +88,16 @@ int main() {
                     }
                     if (use_reg.def.first == state.counter) {
                         if (def_target.empty()) {
-                            g.addEdge(use_reg.name, use_reg.def.second, target, state.counter);
+                            if (state.memory_access == false)
+                                g.addEdge(use_reg.name, use_reg.def.second, target, state.counter);
                         } else {
                             g.addEdge(use_reg.name, use_reg.def.second, def_target, state.counter);
                         }
                         
                     } else {
                         if (def_target.empty()) {
-                            g.addEdge(use_reg.name, use_reg.def.first, target, state.counter);
+                            if (state.memory_access == false)
+                                g.addEdge(use_reg.name, use_reg.def.first, target, state.counter);
                         } else {
                             g.addEdge(use_reg.name, use_reg.def.first, def_target, state.counter);
                         }
@@ -140,7 +142,8 @@ int main() {
                 } else {
                     g.addNode(operand, state.counter);
                     if (def_target.empty()) {
-                        g.addEdge(operand, state.counter, target, state.counter);
+                        if (state.memory_access == false)
+                            g.addEdge(operand, state.counter, target, state.counter);
                     } else {
                         g.addEdge(operand, state.counter, def_target, state.counter);
                     }
@@ -151,6 +154,7 @@ int main() {
             }
             
             state.counter++;
+            state.memory_access = false;
         }
 
 

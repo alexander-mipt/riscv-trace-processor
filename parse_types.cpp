@@ -99,6 +99,8 @@ void load_routine(Context& ctx, Instr& instru) {
         ctx.cache.push(pattern);
     }
 
+    ctx.memory_access = true;
+
     printf("use: %s\n", reg.name.c_str());
     printf("base, offset: %s %s\n", base_offset.first.c_str(), base_offset.second.c_str());
 
@@ -128,6 +130,8 @@ void store_routine(Context& ctx, Instr& instru) {
     if ( !pattern.empty() ) {
         ctx.cache.push(pattern);
     }
+
+    ctx.memory_access = true;
 
     printf("use: %s\n", reg.name.c_str());
     printf("base, offset: %s %s\n", base_offset.first.c_str(), base_offset.second.c_str());
